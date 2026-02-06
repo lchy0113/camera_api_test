@@ -1,0 +1,13 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.Camera_api_test" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    </style>
+
+    <style name="Theme.Camera_api_test" parent="Base.Theme.Camera_api_test" />
+
+    <style name="Theme.CameraApiTest" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <!-- 필요하면 색상만 추가 -->
+    </style>
+</resources>
