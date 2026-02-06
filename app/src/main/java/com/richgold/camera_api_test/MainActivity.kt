@@ -280,18 +280,19 @@ class MainActivity : AppCompatActivity() {
             val t = selectedType()
             val c = selectedCardinality()
 
+            logLine("[DEBUG] CameraCharacteristics read: key=$keyName, type=$t, cardinality=$c")
             val v1 = readAnyFromCharacteristics(chars, keyName, t, c)
-            logLine("Chars[$keyName] ($t/$c) => $v1")
+            logLine("[DEBUG] Chars[$keyName] ($t/$c) => $v1")
 
-            // BYTE 타입은 단일/배열 실수 잦아서 둘 다 자동 시도
             if (t == VType.BYTE) {
                 val vArr = readAnyFromCharacteristics(chars, keyName, VType.BYTE, Cardinality.ARRAY)
-                logLine("Chars[$keyName] (BYTE/ARRAY) => $vArr")
+                logLine("[DEBUG] Chars[$keyName] (BYTE/ARRAY) => $vArr")
                 val vOne = readAnyFromCharacteristics(chars, keyName, VType.BYTE, Cardinality.SINGLE)
-                logLine("Chars[$keyName] (BYTE/SINGLE) => $vOne")
+                logLine("[DEBUG] Chars[$keyName] (BYTE/SINGLE) => $vOne")
             }
         } catch (e: Exception) {
-            logLine("Read Chars failed: ${e.message}")
+            logLine("[DEBUG] Read Chars failed: ${e.message}")
+            e.printStackTrace()
         }
     }
 
@@ -399,15 +400,20 @@ class MainActivity : AppCompatActivity() {
         val c = selectedCardinality()
 
         val out = try {
+            logLine("[DEBUG] CaptureResult read: key=$keyName, type=$t, cardinality=$c")
             when (t) {
                 VType.BYTE -> {
                     if (c == Cardinality.ARRAY) {
                         val k = CaptureResult.Key(keyName, ByteArray::class.java)
+                        logLine("[DEBUG] CaptureResult.Key = $k")
                         val v = result.get(k)
+                        logLine("[DEBUG] CaptureResult value = ${v?.joinToString { it.toUByte().toString() } ?: "null"}")
                         v?.joinToString { it.toUByte().toString() } ?: "null"
                     } else {
                         val k = CaptureResult.Key(keyName, Byte::class.javaObjectType)
+                        logLine("[DEBUG] CaptureResult.Key = $k")
                         val v = result.get(k)
+                        logLine("[DEBUG] CaptureResult value = ${v?.toUByte()?.toString() ?: "null"}")
                         v?.toUByte()?.toString() ?: "null"
                     }
                 }
@@ -415,11 +421,15 @@ class MainActivity : AppCompatActivity() {
                 VType.INT32 -> {
                     if (c == Cardinality.ARRAY) {
                         val k = CaptureResult.Key(keyName, IntArray::class.java)
+                        logLine("[DEBUG] CaptureResult.Key = $k")
                         val v = result.get(k)
+                        logLine("[DEBUG] CaptureResult value = ${v?.joinToString() ?: "null"}")
                         v?.joinToString() ?: "null"
                     } else {
                         val k = CaptureResult.Key(keyName, Int::class.javaObjectType)
+                        logLine("[DEBUG] CaptureResult.Key = $k")
                         val v = result.get(k)
+                        logLine("[DEBUG] CaptureResult value = ${v?.toString() ?: "null"}")
                         v?.toString() ?: "null"
                     }
                 }
@@ -427,11 +437,15 @@ class MainActivity : AppCompatActivity() {
                 VType.INT64 -> {
                     if (c == Cardinality.ARRAY) {
                         val k = CaptureResult.Key(keyName, LongArray::class.java)
+                        logLine("[DEBUG] CaptureResult.Key = $k")
                         val v = result.get(k)
+                        logLine("[DEBUG] CaptureResult value = ${v?.joinToString() ?: "null"}")
                         v?.joinToString() ?: "null"
                     } else {
                         val k = CaptureResult.Key(keyName, Long::class.javaObjectType)
+                        logLine("[DEBUG] CaptureResult.Key = $k")
                         val v = result.get(k)
+                        logLine("[DEBUG] CaptureResult value = ${v?.toString() ?: "null"}")
                         v?.toString() ?: "null"
                     }
                 }
@@ -439,29 +453,36 @@ class MainActivity : AppCompatActivity() {
                 VType.FLOAT -> {
                     if (c == Cardinality.ARRAY) {
                         val k = CaptureResult.Key(keyName, FloatArray::class.java)
+                        logLine("[DEBUG] CaptureResult.Key = $k")
                         val v = result.get(k)
+                        logLine("[DEBUG] CaptureResult value = ${v?.joinToString() ?: "null"}")
                         v?.joinToString() ?: "null"
                     } else {
                         val k = CaptureResult.Key(keyName, Float::class.javaObjectType)
+                        logLine("[DEBUG] CaptureResult.Key = $k")
                         val v = result.get(k)
+                        logLine("[DEBUG] CaptureResult value = ${v?.toString() ?: "null"}")
                         v?.toString() ?: "null"
                     }
                 }
             }
         } catch (iae: IllegalArgumentException) {
+            logLine("[DEBUG] IllegalArgumentException: ${iae.message}")
+            iae.printStackTrace()
             "IllegalArgumentException (key/type mismatch or not exposed in Result)"
         } catch (t2: Throwable) {
+            logLine("[DEBUG] Error: ${t2.message}")
+            t2.printStackTrace()
             "Error: ${t2.message}"
         }
 
-        logLine("Result[$keyName] ($t/$c) => $out")
+        logLine("[DEBUG] Result[$keyName] ($t/$c) => $out")
 
-        // BYTE는 단일/배열 둘 다 한 번 더 보여주기
         if (t == VType.BYTE) {
             val outArr = safeReadByteFromResult(result, keyName, true)
-            logLine("Result[$keyName] (BYTE/ARRAY) => $outArr")
+            logLine("[DEBUG] Result[$keyName] (BYTE/ARRAY) => $outArr")
             val outOne = safeReadByteFromResult(result, keyName, false)
-            logLine("Result[$keyName] (BYTE/SINGLE) => $outOne")
+            logLine("[DEBUG] Result[$keyName] (BYTE/SINGLE) => $outOne")
         }
     }
 
@@ -507,71 +528,81 @@ class MainActivity : AppCompatActivity() {
         val c = selectedCardinality()
 
         try {
+            logLine("[DEBUG] CaptureRequest set: key=$keyName, type=$t, cardinality=$c, value=$valueText")
             when (t) {
                 VType.BYTE -> {
                     if (c == Cardinality.ARRAY) {
                         val k = CaptureRequest.Key(keyName, ByteArray::class.java)
+                        logLine("[DEBUG] CaptureRequest.Key = $k")
                         val v = parseByteArray(valueText)
                         builder.set(k, v)
-                        logLine("Set Request byte[]: $keyName = ${v.joinToString { it.toUByte().toString() }}")
+                        logLine("[DEBUG] Set Request byte[]: $keyName = ${v.joinToString { it.toUByte().toString() }}")
                     } else {
                         val k = CaptureRequest.Key(keyName, Byte::class.javaObjectType)
+                        logLine("[DEBUG] CaptureRequest.Key = $k")
                         val v = parseByte(valueText)
                         builder.set(k, v)
-                        logLine("Set Request byte: $keyName = ${v.toUByte()}")
+                        logLine("[DEBUG] Set Request byte: $keyName = ${v.toUByte()}")
                     }
                 }
 
                 VType.INT32 -> {
                     if (c == Cardinality.ARRAY) {
                         val k = CaptureRequest.Key(keyName, IntArray::class.java)
+                        logLine("[DEBUG] CaptureRequest.Key = $k")
                         val v = parseIntArray(valueText)
                         builder.set(k, v)
-                        logLine("Set Request int[]: $keyName = ${v.joinToString()}")
+                        logLine("[DEBUG] Set Request int[]: $keyName = ${v.joinToString()}")
                     } else {
                         val k = CaptureRequest.Key(keyName, Int::class.javaObjectType)
+                        logLine("[DEBUG] CaptureRequest.Key = $k")
                         val v = valueText.toInt()
                         builder.set(k, v)
-                        logLine("Set Request int: $keyName = $v")
+                        logLine("[DEBUG] Set Request int: $keyName = $v")
                     }
                 }
 
                 VType.INT64 -> {
                     if (c == Cardinality.ARRAY) {
                         val k = CaptureRequest.Key(keyName, LongArray::class.java)
+                        logLine("[DEBUG] CaptureRequest.Key = $k")
                         val v = parseLongArray(valueText)
                         builder.set(k, v)
-                        logLine("Set Request long[]: $keyName = ${v.joinToString()}")
+                        logLine("[DEBUG] Set Request long[]: $keyName = ${v.joinToString()}")
                     } else {
                         val k = CaptureRequest.Key(keyName, Long::class.javaObjectType)
+                        logLine("[DEBUG] CaptureRequest.Key = $k")
                         val v = valueText.toLong()
                         builder.set(k, v)
-                        logLine("Set Request long: $keyName = $v")
+                        logLine("[DEBUG] Set Request long: $keyName = $v")
                     }
                 }
 
                 VType.FLOAT -> {
                     if (c == Cardinality.ARRAY) {
                         val k = CaptureRequest.Key(keyName, FloatArray::class.java)
+                        logLine("[DEBUG] CaptureRequest.Key = $k")
                         val v = parseFloatArray(valueText)
                         builder.set(k, v)
-                        logLine("Set Request float[]: $keyName = ${v.joinToString()}")
+                        logLine("[DEBUG] Set Request float[]: $keyName = ${v.joinToString()}")
                     } else {
                         val k = CaptureRequest.Key(keyName, Float::class.javaObjectType)
+                        logLine("[DEBUG] CaptureRequest.Key = $k")
                         val v = valueText.toFloat()
                         builder.set(k, v)
-                        logLine("Set Request float: $keyName = $v")
+                        logLine("[DEBUG] Set Request float: $keyName = $v")
                     }
                 }
             }
 
-            // 적용: repeating request 다시 걸어줌
             session.setRepeatingRequest(builder.build(), null, backgroundHandler)
-            logLine("Re-applied repeating request with vendor tag.")
+            logLine("[DEBUG] Re-applied repeating request with vendor tag.")
         } catch (iae: IllegalArgumentException) {
-            logLine("Set failed: IllegalArgumentException (key/type mismatch or not exposed in Request)")
+            logLine("[DEBUG] Set failed: IllegalArgumentException (key/type mismatch or not exposed in Request)")
+            iae.printStackTrace()
         } catch (t2: Throwable) {
-            logLine("Set failed: ${t2.message}")
+            logLine("[DEBUG] Set failed: ${t2.message}")
+            t2.printStackTrace()
         }
     }
 
