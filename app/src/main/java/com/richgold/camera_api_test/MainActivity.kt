@@ -17,6 +17,23 @@ import java.util.concurrent.Semaphore
 import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
+    // --- 카메라별 전체 characteristics 출력 기능 ---
+    private fun dumpAllCameraCharacteristics() {
+        try {
+            val cameraIdList = cameraManager.cameraIdList
+            for (id in cameraIdList) {
+                logLine("==== CameraId: $id ====")
+                val chars = cameraManager.getCameraCharacteristics(id)
+                // 모든 key를 순회하며 value를 출력
+                for (key in chars.keys) {
+                    val value = try { chars.get(key) } catch (_: Throwable) { "<error>" }
+                    logLine("${key.name} [${key.javaClass.simpleName}]: $value")
+                }
+            }
+        } catch (e: Exception) {
+            logLine("[ERROR] dumpAllCameraCharacteristics: ${e.message}")
+        }
+    }
 
     private val TAG = "CameraVendorTagTool"
 
@@ -57,6 +74,9 @@ class MainActivity : AppCompatActivity() {
         spCardinality = findViewById(R.id.spCardinality)
 
         initSpinners()
+
+        // 전체 characteristics 출력 버튼 추가 (임시)
+        findViewById<Button?>(R.id.btnDumpChars)?.setOnClickListener { dumpAllCameraCharacteristics() }
 
         // 기본값: 네 dumpsys 기준 키 자동 입력
         if (etKeyName.text.isNullOrBlank()) {

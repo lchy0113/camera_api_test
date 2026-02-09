@@ -88,11 +88,20 @@
             android:padding="10dp" />
     </LinearLayout>
 
+
     <Button
         android:id="@+id/btnApplyRequest"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Apply to Preview Request (Set)"
+        android:textSize="18sp"
+        android:padding="10dp" />
+
+    <Button
+        android:id="@+id/btnDumpChars"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Dump Characteristics"
         android:textSize="18sp"
         android:padding="10dp" />
 
