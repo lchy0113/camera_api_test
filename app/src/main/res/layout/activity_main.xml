@@ -7,10 +7,10 @@
     android:layout_height="match_parent">
 
     <!-- TextureView는 background 금지. 부모에 배경을 준다 -->
+
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="180dp"
         android:background="#000000">
 
         <TextureView
@@ -105,9 +105,10 @@
         android:textSize="18sp"
         android:padding="10dp" />
 
+
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="240dp"
+        android:layout_height="360dp"
         android:fillViewport="true"
         android:paddingTop="8dp">
 
