@@ -82,6 +82,9 @@ class MainActivity : AppCompatActivity() {
         if (etKeyName.text.isNullOrBlank()) {
             etKeyName.setText("com.kdiwin.control.source.available_input_sources")
         }
+        if (etValue.text.isNullOrBlank()) {
+            etValue.setText("0")
+        }
 
         findViewById<Button>(R.id.btnReadChars).setOnClickListener { readFromCharacteristics() }
         findViewById<Button>(R.id.btnReadResult).setOnClickListener { readFromResultOnce() }
@@ -126,20 +129,23 @@ class MainActivity : AppCompatActivity() {
             listOf("SINGLE", "ARRAY")
         )
 
-        // 기본: BYTE / ARRAY (available_input_sources는 byte 타입이고 배열 가능성이 높아서)
+        // 기본: BYTE / SINGLE (available_input_sources는 0/1로 사용)
         spType.setSelection(0)
-        spCardinality.setSelection(1)
+        spCardinality.setSelection(0)
     }
 
     private fun selectedType(): VType = VType.valueOf(spType.selectedItem.toString())
     private fun selectedCardinality(): Cardinality = Cardinality.valueOf(spCardinality.selectedItem.toString())
 
     private fun logLine(msg: String) {
-        Log.i(TAG, msg)
+        val ts = java.text.SimpleDateFormat("HH:mm:ss.SSS", java.util.Locale.US)
+            .format(java.util.Date())
+        val line = "[$ts] $msg"
+        Log.i(TAG, line)
 
         // UI thread에서만 TextView 접근
         runOnUiThread {
-            tvLog.append(msg + "\n")
+            tvLog.append(line + "\n")
 
             // 자동 스크롤 (맨 아래로)
             val layout = tvLog.layout
@@ -148,6 +154,10 @@ class MainActivity : AppCompatActivity() {
                 if (scroll > 0) tvLog.scrollTo(0, scroll) else tvLog.scrollTo(0, 0)
             }
         }
+    }
+
+    private fun logSeparator(title: String) {
+        logLine("---------------- $title ----------------")
     }
 
 
@@ -289,6 +299,7 @@ class MainActivity : AppCompatActivity() {
 
     // --- Vendor Tag: Read from CameraCharacteristics (Static) ---
     private fun readFromCharacteristics() {
+        logSeparator("READ CHARS")
         val keyName = etKeyName.text.toString().trim()
         if (keyName.isEmpty()) {
             logLine("Key name is empty.")
@@ -380,6 +391,7 @@ class MainActivity : AppCompatActivity() {
     // --- Vendor Tag: Read from CaptureResult (Dynamic) ---
     // 기존의 "다음 프레임 기다리기" 대신 "1프레임 캡처"로 즉시 읽기
     private fun readFromResultOnce() {
+        logSeparator("READ RESULT")
         val session = captureSession
         val builder = previewRequestBuilder
 
@@ -524,6 +536,7 @@ class MainActivity : AppCompatActivity() {
 
     // --- Vendor Tag: Apply to CaptureRequest (Set) ---
     private fun applyVendorTagToPreviewRequest() {
+        logSeparator("APPLY REQUEST")
         val builder = previewRequestBuilder
         val session = captureSession
 
