@@ -61,7 +61,7 @@
         android:id="@+id/etValue"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="value (0 or 1)"
+        android:hint="value (0;door or 1;cctv)"
         android:textSize="18sp"
         android:padding="10dp" />
 
@@ -75,7 +75,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Read (Chars)"
+            android:text="Read (Static)"
             android:textSize="18sp"
             android:padding="10dp" />
 
@@ -84,7 +84,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Read (Result)"
+            android:text="Read (Dynamic)"
             android:textSize="18sp"
             android:padding="10dp" />
     </LinearLayout>
